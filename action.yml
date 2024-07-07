@@ -1,0 +1,84 @@
+name: 'Setup Rush'
+description: 'Setup Rush with caching support'
+author: 'Chamupathi Gigara Hettige'
+branding:
+  icon: 'package'
+  color: 'blue'
+inputs:
+  pnpm:
+    description: 'pnpm version'
+    default: ''
+  node:
+    description: 'node version'
+    default: ''
+  cache-rush:
+    description: 'Cache rush directories'
+    default: 'true'
+  cache-rush-dir:
+    description: 'Directories to cache with rush cache key'
+    default: |
+          common/temp/install-run
+          ~/.rush    
+  cache-pnpm:
+    description: 'Cache pnpm directories'
+    default: 'true'
+  cache-pnpm-dir:
+    description: 'Directories to cache with pnpm cache key'
+    default: |
+          common/temp/pnpm-store
+          ~/.cache/Cypress     
+  set-env:
+    description: 'Set ACTIONS_CACHE_URL & ACTIONS_RUNTIME_TOKEN envs'
+    default: 'true'
+  rush-install:
+    description: 'run rush install command'
+    default: 'true'
+  rush-build:
+    description: 'run rush build command'
+    default: 'false'
+  optional-build-args:
+    description: 'optional rush build args'
+    default: ''    
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      if: ${{ inputs.pnpm != '' }}
+      with:
+        version: ${{ inputs.pnpm }}
+
+    - name: Setup node
+      if: ${{ inputs.node != '' }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node }}
+
+    - name: Cache Rush
+      if: ${{ inputs.cache-rush == 'true' }}
+      uses: actions/cache@v2
+      with:
+        path: ${{ inputs.cache-rush-dir }}
+        key: Rush-cache-${{ hashFiles('rush.json') }}
+
+    - name: Cache pnpm
+      if: ${{ inputs.cache-pnpm == 'true'  }}
+      uses: actions/cache@v3
+      with:
+        path: ${{ inputs.cache-pnpm-dir }}
+        key: pnpm-cache-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+    - name: Set envs
+      if: ${{ inputs.set-env == 'true'  }}
+      uses:  gigara/rush-cache@v2.0.1
+
+    - name: Rush install
+      if: ${{ inputs.rush-install == 'true'  }}
+      shell: bash
+      run: node common/scripts/install-run-rush.js install        
+
+    - name: Build Rush
+      if: ${{ inputs.build-rush == 'true' }}
+      shell: bash
+      run: node common/scripts/install-run-rush.js build ${{ inputs.optional-build-args }}
