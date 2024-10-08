@@ -60,7 +60,7 @@ runs:
       uses: actions/cache@v2
       with:
         path: ${{ inputs.cache-rush-dir }}
-        key: Rush-cache-${{ hashFiles('rush.json') }}
+        key: Rush-cache-${{ runner.os }}-${{ hashFiles('rush.json') }}
 
     - name: Cache pnpm
       if: ${{ inputs.cache-pnpm == 'true'  }}
