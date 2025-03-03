@@ -51,27 +51,27 @@ runs:
 
     - name: Setup node
       if: ${{ inputs.node != '' }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node }}
 
     - name: Cache Rush
       if: ${{ inputs.cache-rush == 'true' }}
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ${{ inputs.cache-rush-dir }}
         key: Rush-cache-${{ runner.os }}-${{ hashFiles('rush.json') }}
 
     - name: Cache pnpm
       if: ${{ inputs.cache-pnpm == 'true'  }}
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ${{ inputs.cache-pnpm-dir }}
         key: pnpm-cache-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
     - name: Set envs
       if: ${{ inputs.set-env == 'true'  }}
-      uses:  gigara/rush-cache@v2.0.1
+      uses:  gigara/rush-cache@v2.1.0
 
     - name: Rush install
       if: ${{ inputs.rush-install == 'true'  }}
