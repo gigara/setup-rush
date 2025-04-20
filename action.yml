@@ -71,7 +71,7 @@ runs:
 
     - name: Set envs
       if: ${{ inputs.set-env == 'true'  }}
-      uses:  gigara/rush-cache@v2.1.0
+      uses:  gigara/rush-cache@v2.2.0
 
     - name: Rush install
       if: ${{ inputs.rush-install == 'true'  }}
